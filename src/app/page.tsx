@@ -116,6 +116,49 @@ export default function Home() {
           </p>
         </section>
 
+        {/* ── How it works ─────────────────────────────────────────────────── */}
+        <section className="w-full">
+          <ol className="flex flex-col gap-3">
+            {[
+              { n: "1", text: "Sube entre 1 y 4 fotos de tus mascotas (JPG, PNG o WebP)." },
+              { n: "2", text: 'Haz clic en "Generar" para ver la imagen lista.' },
+              { n: "3", text: "Descarga o comparte directamente desde tu celular." },
+            ].map(({ n, text }) => (
+              <li key={n} className="flex items-start gap-3">
+                <span
+                  style={{
+                    fontFamily: "var(--font-display), 'Barlow Condensed', sans-serif",
+                    fontWeight: 900,
+                    fontSize: "1.1rem",
+                    color: "#2D2EE0",
+                    backgroundColor: "#F5A800",
+                    borderRadius: "50%",
+                    width: 28,
+                    height: 28,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    marginTop: 1,
+                  }}
+                >
+                  {n}
+                </span>
+                <p
+                  className="text-sm"
+                  style={{
+                    color: "rgba(255,255,255,0.85)",
+                    fontFamily: "var(--font-body), Nunito, sans-serif",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {text}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
         {/* ── Upload zone ───────────────────────────────────────────────────── */}
         <section className="w-full">
           <UploadZone
