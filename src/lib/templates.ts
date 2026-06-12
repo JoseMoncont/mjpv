@@ -26,10 +26,16 @@ export interface Template {
   type: "pets-arc" | "single-photo-name";
   width: number;
   height: number;
+  /**
+   * Template PNG path. Used by both types:
+   * - pets-arc: drawn as background; pet photos appear on top.
+   * - single-photo-name: drawn as overlay on top of the user photo.
+   *   The PNG must have a transparent circular cutout at userPhotoSlot
+   *   so the user photo shows through.
+   */
+  src: string;
 
   // ── pets-arc fields ──────────────────────────────────────────────────────
-  /** Template PNG with candidates already drawn inside the main circle. */
-  src?: string;
   /** Reference circle already drawn in the PNG — used for arc positioning only. */
   mainCircle?: { cx: number; cy: number; r: number };
   /** Per-count layout config. Pixel values derived at draw time from mainCircle.r. */
@@ -38,20 +44,9 @@ export interface Template {
   qrCode?: { src: string; size: number; padding: number };
 
   // ── single-photo-name fields ─────────────────────────────────────────────
-  /** Background layer PNG (title + pattern, empty center for user photo). */
-  bgSrc?: string;
-  /**
-   * Overlay PNG drawn on top of the user photo (candidates, frame, etc.).
-   * IMPORTANT: this PNG must have real alpha transparency in its empty areas.
-   * If the source file uses solid black (#000000) as "transparent", re-export it
-   * with a proper alpha channel before placing it here. As a fallback,
-   * chromaKeyBlackToAlpha() in canvasUtils.ts can convert black pixels to alpha
-   * at runtime, but true alpha transparency is strongly preferred.
-   */
-  overlaySrc?: string;
-  /** Circular slot in the center of the template where the user photo is placed. */
+  /** Circular slot where the user photo is drawn (behind the template PNG). */
   userPhotoSlot?: { cx: number; cy: number; r: number };
-  /** Config for the name text drawn below the user photo. */
+  /** Config for the name text drawn after the template. */
   nameText?: NameTextConfig;
 }
 
@@ -76,10 +71,9 @@ export const templates: Template[] = [
     id: "template-02",
     name: "Foto y nombre",
     type: "single-photo-name",
+    src: "/templates/template-02.png",
     width: 1080,
     height: 1350,
-    bgSrc: "/templates/template-02-bg.png",
-    overlaySrc: "/templates/template-02-overlay.png",
     userPhotoSlot: { cx: 540, cy: 510, r: 220 },
     nameText: {
       x: 540,

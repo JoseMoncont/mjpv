@@ -81,23 +81,16 @@ export function drawComposition(
 
 /**
  * Composition for 'single-photo-name' templates. Draw order:
- *   1. Background layer (bgImg)
- *   2. User photo — circular, object-fit cover — + white border ring
- *   3. Overlay layer (candidates on top)
- *   4. Name text below the photo circle
- *
- * overlayImg must have real alpha transparency in its empty areas.
- * If the overlay PNG uses solid black as transparent, pre-process it with
- * chromaKeyBlackToAlpha() before passing it here — or re-export the PNG
- * with a proper alpha channel (preferred, lets you remove the chroma key step).
+ *   1. User photo — circular, object-fit cover — + white border ring
+ *   2. Template PNG on top (must have a transparent circular cutout at userPhotoSlot)
+ *   3. Name text
  */
 export function drawSinglePhotoNameComposition(
   canvas: HTMLCanvasElement,
   userImage: HTMLImageElement | null,
   userName: string,
   template: Template,
-  bgImg: HTMLImageElement | HTMLCanvasElement,
-  overlayImg: HTMLImageElement | HTMLCanvasElement
+  templateImg: HTMLImageElement
 ): void {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
@@ -106,10 +99,7 @@ export function drawSinglePhotoNameComposition(
   canvas.height = template.height;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 1. Background
-  ctx.drawImage(bgImg, 0, 0, template.width, template.height);
-
-  // 2. User photo
+  // 1. User photo behind the template
   if (userImage && template.userPhotoSlot) {
     const { cx, cy, r } = template.userPhotoSlot;
 
@@ -130,10 +120,10 @@ export function drawSinglePhotoNameComposition(
     ctx.stroke();
   }
 
-  // 3. Overlay (candidates) on top
-  ctx.drawImage(overlayImg, 0, 0, template.width, template.height);
+  // 2. Template overlay (transparent cutout reveals user photo)
+  ctx.drawImage(templateImg, 0, 0, template.width, template.height);
 
-  // 4. Name text
+  // 3. Name text
   if (userName.trim() && template.nameText) {
     const cfg = template.nameText;
     const text = cfg.uppercase ? userName.toUpperCase() : userName;
@@ -150,29 +140,6 @@ export function drawSinglePhotoNameComposition(
 
     ctx.fillText(text, cfg.x, cfg.y);
   }
-}
-
-/**
- * Converts pure-black pixels to fully transparent.
- * Only needed when the overlay PNG was exported with black (#000000) instead of
- * real alpha transparency. If the PNG already has correct alpha, skip this and
- * pass the HTMLImageElement directly to drawSinglePhotoNameComposition.
- */
-export function chromaKeyBlackToAlpha(img: HTMLImageElement): HTMLCanvasElement {
-  const c = document.createElement("canvas");
-  c.width = img.naturalWidth;
-  c.height = img.naturalHeight;
-  const ctx = c.getContext("2d")!;
-  ctx.drawImage(img, 0, 0);
-  const imageData = ctx.getImageData(0, 0, c.width, c.height);
-  const d = imageData.data;
-  for (let i = 0; i < d.length; i += 4) {
-    if (d[i] < 8 && d[i + 1] < 8 && d[i + 2] < 8) {
-      d[i + 3] = 0;
-    }
-  }
-  ctx.putImageData(imageData, 0, 0);
-  return c;
 }
 
 /** Returns the canvas content as a PNG Blob. */
