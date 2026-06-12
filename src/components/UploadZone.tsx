@@ -4,7 +4,6 @@ import { useCallback } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 
 const MAX_SIZE = 10 * 1024 * 1024;
-const MAX_FILES = 4;
 const ACCEPTED = { "image/jpeg": [], "image/png": [], "image/webp": [] };
 
 interface UploadZoneProps {
@@ -12,10 +11,11 @@ interface UploadZoneProps {
   onAdd: (incoming: File[]) => void;
   onRemove: (index: number) => void;
   onGenerate: () => void;
+  maxFiles?: number;
 }
 
-export default function UploadZone({ files, onAdd, onRemove, onGenerate }: UploadZoneProps) {
-  const remaining = MAX_FILES - files.length;
+export default function UploadZone({ files, onAdd, onRemove, onGenerate, maxFiles = 4 }: UploadZoneProps) {
+  const remaining = maxFiles - files.length;
 
   const onDrop = useCallback(
     (accepted: File[], rejected: FileRejection[]) => {
@@ -23,16 +23,16 @@ export default function UploadZone({ files, onAdd, onRemove, onGenerate }: Uploa
         const code = rejected[0]?.errors[0]?.code;
         const msg =
           code === "file-too-large"
-            ? "Algún archivo supera los 10 MB."
+            ? "El archivo supera los 10 MB."
             : code === "too-many-files"
-              ? `Máximo ${MAX_FILES} fotos en total.`
+              ? `Máximo ${maxFiles} foto${maxFiles === 1 ? "" : "s"} en total.`
               : "Formato no admitido. Usa JPG, PNG o WebP.";
         alert(msg);
         return;
       }
       if (accepted.length > 0) onAdd(accepted);
     },
-    [onAdd]
+    [onAdd, maxFiles]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -40,7 +40,7 @@ export default function UploadZone({ files, onAdd, onRemove, onGenerate }: Uploa
     accept: ACCEPTED,
     maxSize: MAX_SIZE,
     maxFiles: remaining,
-    multiple: true,
+    multiple: maxFiles > 1,
     disabled: remaining <= 0,
   });
 
@@ -58,6 +58,11 @@ export default function UploadZone({ files, onAdd, onRemove, onGenerate }: Uploa
     color: "#1A1A8C",
   };
 
+  const instructionText =
+    maxFiles === 1
+      ? "Sube 1 foto"
+      : `Sube entre 1 y ${maxFiles} fotos`;
+
   return (
     <div className="flex flex-col gap-4 w-full">
 
@@ -69,10 +74,10 @@ export default function UploadZone({ files, onAdd, onRemove, onGenerate }: Uploa
           fontFamily: "var(--font-body), Nunito, sans-serif",
         }}
       >
-        Sube entre 1 y 4 fotos de tus mascotas
+        {instructionText}
         {files.length > 0 && (
           <span style={{ color: "#F5A800", fontWeight: 700 }}>
-            {" "}— {files.length}/{MAX_FILES} subidas
+            {" "}— {files.length}/{maxFiles} subida{files.length === 1 ? "" : "s"}
           </span>
         )}
       </p>
@@ -125,7 +130,7 @@ export default function UploadZone({ files, onAdd, onRemove, onGenerate }: Uploa
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={url}
-                  alt={`Mascota ${i + 1}`}
+                  alt={`Foto ${i + 1}`}
                   style={{
                     width: 80,
                     height: 80,
@@ -135,7 +140,6 @@ export default function UploadZone({ files, onAdd, onRemove, onGenerate }: Uploa
                     display: "block",
                   }}
                 />
-                {/* X button */}
                 <button
                   onClick={() => onRemove(i)}
                   className="absolute flex items-center justify-center cursor-pointer"
@@ -153,7 +157,7 @@ export default function UploadZone({ files, onAdd, onRemove, onGenerate }: Uploa
                     lineHeight: 1,
                     padding: 0,
                   }}
-                  aria-label={`Eliminar mascota ${i + 1}`}
+                  aria-label={`Eliminar foto ${i + 1}`}
                 >
                   ✕
                 </button>

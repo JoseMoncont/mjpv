@@ -43,7 +43,7 @@ export default function TemplateSelector({ selected, onSelect }: TemplateSelecto
               aria-pressed={isActive}
             >
               <Image
-                src={t.src}
+                src={t.src ?? t.bgSrc ?? ""}
                 alt={t.name}
                 fill
                 sizes="80px"

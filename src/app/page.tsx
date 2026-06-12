@@ -31,34 +31,35 @@ function AsteriskIcon({ color = "#F5A800", size = "1em" }: { color?: string; siz
 }
 
 export default function Home() {
+  // ── pets-arc state ─────────────────────────────────────────────────────────
   const [petFiles, setPetFiles] = useState<File[]>([]);
   const [petImages, setPetImages] = useState<HTMLImageElement[]>([]);
+
+  // ── single-photo-name state ────────────────────────────────────────────────
+  const [userFile, setUserFile] = useState<File | null>(null);
+  const [userImage, setUserImage] = useState<HTMLImageElement | null>(null);
+  const [userName, setUserName] = useState("");
+
   const [selectedTemplate, setSelectedTemplate] = useState<Template>(templates[0]);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
 
-  const hasPhotos = petImages.length > 0;
+  const hasPhotos =
+    selectedTemplate.type === "pets-arc" ? petImages.length > 0 : userImage !== null;
 
-  // ── Add files ──────────────────────────────────────────────────────────────
+  // ── pets-arc handlers ──────────────────────────────────────────────────────
   const handleAdd = useCallback(
     (incoming: File[]) => {
       const capacity = 4 - petFiles.length;
       if (capacity <= 0) return;
       const toAdd = incoming.slice(0, capacity);
-
       toAdd.forEach((file) => {
         const url = URL.createObjectURL(file);
         const img = new Image();
         img.onload = () => {
-          setPetFiles((prev) => {
-            if (prev.length >= 4) return prev;
-            return [...prev, file];
-          });
-          setPetImages((prev) => {
-            if (prev.length >= 4) return prev;
-            return [...prev, img];
-          });
+          setPetFiles((prev) => (prev.length >= 4 ? prev : [...prev, file]));
+          setPetImages((prev) => (prev.length >= 4 ? prev : [...prev, img]));
         };
         img.src = url;
       });
@@ -66,19 +67,41 @@ export default function Home() {
     [petFiles.length]
   );
 
-  // ── Remove file ────────────────────────────────────────────────────────────
   const handleRemove = useCallback((index: number) => {
     setPetFiles((prev) => prev.filter((_, i) => i !== index));
     setPetImages((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
-  // ── Scroll to result ───────────────────────────────────────────────────────
+  // ── single-photo-name handlers ─────────────────────────────────────────────
+  const handleAddSingle = useCallback((incoming: File[]) => {
+    const file = incoming[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      setUserFile(file);
+      setUserImage(img);
+    };
+    img.src = url;
+  }, []);
+
+  const handleRemoveSingle = useCallback(() => {
+    setUserFile(null);
+    setUserImage(null);
+  }, []);
+
+  // ── Shared handlers ────────────────────────────────────────────────────────
   const handleGenerate = useCallback(() => {
     resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
   const handleTemplateSelect = useCallback((t: Template) => {
     setSelectedTemplate(t);
+    setPetFiles([]);
+    setPetImages([]);
+    setUserFile(null);
+    setUserImage(null);
+    setUserName("");
   }, []);
 
   return (
@@ -176,14 +199,60 @@ export default function Home() {
           </ol>
         </section>
 
-        {/* ── Upload zone ───────────────────────────────────────────────────── */}
+        {/* ── Upload zone (conditional by template type) ────────────────────── */}
         <section className="w-full">
-          <UploadZone
-            files={petFiles}
-            onAdd={handleAdd}
-            onRemove={handleRemove}
-            onGenerate={handleGenerate}
-          />
+          {selectedTemplate.type === "pets-arc" ? (
+            <UploadZone
+              files={petFiles}
+              onAdd={handleAdd}
+              onRemove={handleRemove}
+              onGenerate={handleGenerate}
+            />
+          ) : (
+            <div className="flex flex-col gap-5 w-full">
+              <UploadZone
+                files={userFile ? [userFile] : []}
+                onAdd={handleAddSingle}
+                onRemove={handleRemoveSingle}
+                onGenerate={handleGenerate}
+                maxFiles={1}
+              />
+              {/* Name input */}
+              <div className="flex flex-col gap-2 w-full">
+                <label
+                  htmlFor="user-name"
+                  style={{
+                    fontFamily: "var(--font-display), 'Barlow Condensed', sans-serif",
+                    fontWeight: 900,
+                    fontSize: "0.8rem",
+                    letterSpacing: "0.15em",
+                    textTransform: "uppercase",
+                    color: "#F5A800",
+                  }}
+                >
+                  Escribe tu nombre
+                </label>
+                <input
+                  id="user-name"
+                  type="text"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  maxLength={30}
+                  placeholder="Tu nombre"
+                  style={{
+                    fontFamily: "var(--font-body), Nunito, sans-serif",
+                    fontSize: "1rem",
+                    padding: "0.75rem 1rem",
+                    backgroundColor: "rgba(255,255,255,0.08)",
+                    border: "2px solid #F5A800",
+                    color: "#ffffff",
+                    outline: "none",
+                    width: "100%",
+                  }}
+                />
+              </div>
+            </div>
+          )}
         </section>
 
         {/* ── Canvas preview ────────────────────────────────────────────────── */}
@@ -197,18 +266,18 @@ export default function Home() {
           >
             <TemplateCanvas
               template={selectedTemplate}
-              petImages={petImages}
               canvasRef={canvasRef}
+              petImages={selectedTemplate.type === "pets-arc" ? petImages : []}
+              userImage={selectedTemplate.type === "single-photo-name" ? userImage : undefined}
+              userName={selectedTemplate.type === "single-photo-name" ? userName : undefined}
             />
           </div>
 
-          {/* Template selector (hidden when only 1 template) */}
           <TemplateSelector
             selected={selectedTemplate}
             onSelect={handleTemplateSelect}
           />
 
-          {/* Download / share — only when at least 1 photo */}
           {hasPhotos && (
             <ActionButtons canvasRef={canvasRef} disabled={false} />
           )}
