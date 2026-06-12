@@ -103,5 +103,6 @@ export const templates: Template[] = [
       align: "center",
       uppercase: true,
     },
+    qrCode: { src: "/templates/qrcode.png", size: 150, padding: 32 },
   },
 ];

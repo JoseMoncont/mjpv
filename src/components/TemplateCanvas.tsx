@@ -45,7 +45,8 @@ export default function TemplateCanvas({
         userNameRef.current,
         template,
         templateImg,
-        bgImgRef.current ?? undefined
+        bgImgRef.current ?? undefined,
+        qrImgRef.current ?? undefined
       );
     }
   }

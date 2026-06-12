@@ -104,7 +104,8 @@ export function drawSinglePhotoNameComposition(
   userName: string,
   template: Template,
   overlayImg: HTMLImageElement,
-  bgImg?: HTMLImageElement
+  bgImg?: HTMLImageElement,
+  qrImage?: HTMLImageElement
 ): void {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
@@ -183,6 +184,18 @@ export function drawSinglePhotoNameComposition(
 
   // 4. Overlay on top (candidates + frame, transparent elsewhere)
   ctx.drawImage(overlayImg, 0, 0, template.width, template.height);
+
+  // 5. QR code — bottom-right corner
+  if (qrImage && template.qrCode) {
+    const { size, padding } = template.qrCode;
+    ctx.drawImage(
+      qrImage,
+      template.width - size - padding,
+      template.height - size - padding,
+      size,
+      size
+    );
+  }
 }
 
 /** Returns the canvas content as a PNG Blob. */
