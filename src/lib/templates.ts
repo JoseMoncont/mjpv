@@ -97,7 +97,7 @@ export const templates: Template[] = [
       fontFamily: "var(--font-kurdis)",
       fontWeight: 800,
       color: "#FFFFFF",
-      bgColor: "#2D2EE0",
+      bgColor: "#E8401C",
       bgPaddingX: 32,
       bgPaddingY: 14,
       align: "center",
