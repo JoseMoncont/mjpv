@@ -28,7 +28,8 @@ export function drawComposition(
   canvas: HTMLCanvasElement,
   petImages: HTMLImageElement[],
   templateImage: HTMLImageElement,
-  template: Template
+  template: Template,
+  qrImage?: HTMLImageElement
 ): void {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
@@ -71,6 +72,18 @@ export function drawComposition(
     ctx.stroke();
     ctx.restore();
   });
+
+  // QR code — bottom-right corner
+  if (qrImage && template.qrCode) {
+    const { size, padding } = template.qrCode;
+    ctx.drawImage(
+      qrImage,
+      template.width - size - padding,
+      template.height - size - padding,
+      size,
+      size
+    );
+  }
 }
 
 /** Returns the canvas content as a PNG Blob. */

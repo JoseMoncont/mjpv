@@ -17,6 +17,8 @@ export interface Template {
   mainCircle: { cx: number; cy: number; r: number };
   /** Per-count layout config. Pixel values are derived at draw time from mainCircle.r. */
   petConfig: Record<1 | 2 | 3 | 4, PetCountConfig>;
+  /** Optional QR code overlay drawn in the bottom-right corner. */
+  qrCode?: { src: string; size: number; padding: number };
 }
 
 export const templates: Template[] = [
@@ -33,5 +35,6 @@ export const templates: Template[] = [
       3: { radiusPct: 40,  arcRadiusPct: 115, angles: [220, 270, 320] },
       4: { radiusPct: 35,  arcRadiusPct: 115, angles: [210, 250, 290, 330] },
     },
+    qrCode: { src: "/templates/qrcode.png", size: 120, padding: 32 },
   },
 ];

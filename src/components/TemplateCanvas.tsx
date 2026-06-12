@@ -17,6 +17,7 @@ export default function TemplateCanvas({
   canvasRef,
 }: TemplateCanvasProps) {
   const templateImgRef = useRef<HTMLImageElement | null>(null);
+  const qrImgRef = useRef<HTMLImageElement | null>(null);
 
   // Load (or reload) the template PNG whenever its src changes
   useEffect(() => {
@@ -29,6 +30,18 @@ export default function TemplateCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [template.src]);
 
+  // Load QR code image once per template
+  useEffect(() => {
+    if (!template.qrCode) { qrImgRef.current = null; return; }
+    const img = new Image();
+    img.src = template.qrCode.src;
+    img.onload = () => {
+      qrImgRef.current = img;
+      redraw();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [template.qrCode?.src]);
+
   // Redraw whenever petImages array reference changes (upload or removal)
   useEffect(() => {
     if (templateImgRef.current) redraw();
@@ -39,7 +52,7 @@ export default function TemplateCanvas({
     const canvas = canvasRef.current;
     const templateImg = templateImgRef.current;
     if (!canvas || !templateImg) return;
-    drawComposition(canvas, petImages, templateImg, template);
+    drawComposition(canvas, petImages, templateImg, template, qrImgRef.current ?? undefined);
   }
 
   return (
