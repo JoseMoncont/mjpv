@@ -10,12 +10,10 @@ interface UploadZoneProps {
   files: File[];
   onAdd: (incoming: File[]) => void;
   onRemove: (index: number) => void;
-  onGenerate: () => void;
   maxFiles?: number;
-  showGenerate?: boolean;
 }
 
-export default function UploadZone({ files, onAdd, onRemove, onGenerate, maxFiles = 4, showGenerate = true }: UploadZoneProps) {
+export default function UploadZone({ files, onAdd, onRemove, maxFiles = 4 }: UploadZoneProps) {
   const remaining = maxFiles - files.length;
 
   const onDrop = useCallback(
@@ -44,20 +42,6 @@ export default function UploadZone({ files, onAdd, onRemove, onGenerate, maxFile
     multiple: maxFiles > 1,
     disabled: remaining <= 0,
   });
-
-  const btnStyle: React.CSSProperties = {
-    fontFamily: "var(--font-display), 'Barlow Condensed', sans-serif",
-    fontWeight: 900,
-    letterSpacing: "-0.02em",
-    textTransform: "uppercase",
-    fontSize: "1.25rem",
-    border: "none",
-    cursor: "pointer",
-    padding: "0.875rem 0",
-    width: "100%",
-    backgroundColor: "#F5A800",
-    color: "#1A1A8C",
-  };
 
   const instructionText =
     maxFiles === 1
@@ -168,12 +152,6 @@ export default function UploadZone({ files, onAdd, onRemove, onGenerate, maxFile
         </div>
       )}
 
-      {/* GENERAR button */}
-      {showGenerate && files.length > 0 && (
-        <button onClick={onGenerate} style={btnStyle}>
-          GENERAR
-        </button>
-      )}
     </div>
   );
 }

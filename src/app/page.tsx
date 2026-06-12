@@ -45,7 +45,9 @@ export default function Home() {
   const resultRef = useRef<HTMLDivElement>(null);
 
   const hasPhotos =
-    selectedTemplate.type === "pets-arc" ? petImages.length > 0 : userImage !== null;
+    selectedTemplate.type === "pets-arc"
+      ? petImages.length > 0
+      : userImage !== null && userName.trim().length > 0;
 
   // ── pets-arc handlers ──────────────────────────────────────────────────────
   const handleAdd = useCallback(
@@ -87,11 +89,6 @@ export default function Home() {
   const handleRemoveSingle = useCallback(() => {
     setUserFile(null);
     setUserImage(null);
-  }, []);
-
-  // ── Shared handlers ────────────────────────────────────────────────────────
-  const handleGenerate = useCallback(() => {
-    resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
   const handleTemplateSelect = useCallback((t: Template) => {
@@ -236,7 +233,6 @@ export default function Home() {
               files={petFiles}
               onAdd={handleAdd}
               onRemove={handleRemove}
-              onGenerate={handleGenerate}
             />
           ) : (
             <div className="flex flex-col gap-5 w-full">
@@ -244,9 +240,7 @@ export default function Home() {
                 files={userFile ? [userFile] : []}
                 onAdd={handleAddSingle}
                 onRemove={handleRemoveSingle}
-                onGenerate={handleGenerate}
                 maxFiles={1}
-                showGenerate={false}
               />
               {/* Name input */}
               <div className="flex flex-col gap-2 w-full">
