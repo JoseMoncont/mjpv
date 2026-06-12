@@ -35,6 +35,6 @@ export const templates: Template[] = [
       3: { radiusPct: 40,  arcRadiusPct: 115, angles: [220, 270, 320] },
       4: { radiusPct: 35,  arcRadiusPct: 115, angles: [210, 250, 290, 330] },
     },
-    qrCode: { src: "/templates/qrcode.png", size: 120, padding: 32 },
+    qrCode: { src: "/templates/qrcode.png", size: 150, padding: 32 },
   },
 ];
