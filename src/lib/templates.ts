@@ -94,7 +94,7 @@ export const templates: Template[] = [
       yPct: 59.26,
       fontSizePct: 4.74,
       maxWidthPct: 87.96,
-      fontFamily: '"Barlow Condensed", sans-serif',
+      fontFamily: "var(--font-kurdis)",
       fontWeight: 800,
       color: "#FFFFFF",
       bgColor: "#2D2EE0",

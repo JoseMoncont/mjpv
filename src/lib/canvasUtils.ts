@@ -2,6 +2,18 @@ import type { Template } from "./templates";
 
 const DEG = Math.PI / 180;
 
+/** Resolves a CSS variable font reference (e.g. "var(--font-kurdis)") to the actual
+ *  font-family string that the browser registered, so it can be used in ctx.font. */
+function resolveFontFamily(fontFamily: string): string {
+  if (typeof document === "undefined") return fontFamily;
+  const match = fontFamily.match(/^var\((--[\w-]+)\)(?:,\s*(.+))?$/);
+  if (!match) return fontFamily;
+  const resolved = getComputedStyle(document.documentElement)
+    .getPropertyValue(match[1])
+    .trim();
+  return resolved || match[2] || fontFamily;
+}
+
 /** Pet circle center coords for a given count, using correct math-coords formula. */
 export function getPetPositions(
   template: Template,
@@ -139,12 +151,13 @@ export function drawSinglePhotoNameComposition(
     const maxWidth = template.width  * cfg.maxWidthPct / 100;
     let   fontSize = template.height * cfg.fontSizePct / 100;
 
+    const family = resolveFontFamily(cfg.fontFamily);
     ctx.textAlign = cfg.align;
-    ctx.font = `${cfg.fontWeight} ${fontSize}px ${cfg.fontFamily}`;
+    ctx.font = `${cfg.fontWeight} ${fontSize}px ${family}`;
 
     while (ctx.measureText(text).width > maxWidth && fontSize > 12) {
       fontSize -= 2;
-      ctx.font = `${cfg.fontWeight} ${fontSize}px ${cfg.fontFamily}`;
+      ctx.font = `${cfg.fontWeight} ${fontSize}px ${family}`;
     }
 
     // Background rect
