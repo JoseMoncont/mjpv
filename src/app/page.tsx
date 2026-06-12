@@ -306,7 +306,7 @@ export default function Home() {
       </main>
 
       <footer
-        className="py-6 text-center"
+        className="py-6 text-center flex flex-col items-center gap-2"
         style={{ borderTop: "2px solid rgba(255,255,255,0.15)" }}
       >
         <p
@@ -318,6 +318,25 @@ export default function Home() {
         >
           Me la juego por la vida
         </p>
+        <a
+          href="https://x.com/JoseMoncont"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs flex items-center gap-1"
+          style={{
+            color: "rgba(255,255,255,0.35)",
+            fontFamily: "var(--font-body), Nunito, sans-serif",
+            textDecoration: "none",
+            transition: "color 0.15s",
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = "#ffffff")}
+          onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.35)")}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.261 5.632 5.903-5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg>
+          @JoseMoncont
+        </a>
       </footer>
     </div>
   );
