@@ -12,9 +12,10 @@ interface UploadZoneProps {
   onRemove: (index: number) => void;
   onGenerate: () => void;
   maxFiles?: number;
+  showGenerate?: boolean;
 }
 
-export default function UploadZone({ files, onAdd, onRemove, onGenerate, maxFiles = 4 }: UploadZoneProps) {
+export default function UploadZone({ files, onAdd, onRemove, onGenerate, maxFiles = 4, showGenerate = true }: UploadZoneProps) {
   const remaining = maxFiles - files.length;
 
   const onDrop = useCallback(
@@ -168,7 +169,7 @@ export default function UploadZone({ files, onAdd, onRemove, onGenerate, maxFile
       )}
 
       {/* GENERAR button */}
-      {files.length > 0 && (
+      {showGenerate && files.length > 0 && (
         <button onClick={onGenerate} style={btnStyle}>
           GENERAR
         </button>

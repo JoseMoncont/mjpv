@@ -182,11 +182,18 @@ export default function Home() {
         {/* ── How it works ─────────────────────────────────────────────────── */}
         <section className="w-full">
           <ol className="flex flex-col gap-3">
-            {[
-              { n: "1", text: "Sube entre 1 y 4 fotos de tus mascotas (JPG, PNG o WebP)." },
-              { n: "2", text: 'Haz clic en "Generar" para ver la imagen lista.' },
-              { n: "3", text: "Descarga o comparte directamente desde tu celular." },
-            ].map(({ n, text }) => (
+            {(selectedTemplate.type === "pets-arc"
+              ? [
+                  { n: "1", text: "Sube entre 1 y 4 fotos de tus mascotas (JPG, PNG o WebP)." },
+                  { n: "2", text: 'Haz clic en "Generar" para ver la imagen lista.' },
+                  { n: "3", text: "Descarga o comparte directamente desde tu celular." },
+                ]
+              : [
+                  { n: "1", text: "Sube tu foto (JPG, PNG o WebP)." },
+                  { n: "2", text: "Escribe tu nombre — la imagen se actualiza en tiempo real." },
+                  { n: "3", text: "Descarga o comparte directamente desde tu celular." },
+                ]
+            ).map(({ n, text }) => (
               <li key={n} className="flex items-start gap-3">
                 <span
                   style={{
@@ -239,6 +246,7 @@ export default function Home() {
                 onRemove={handleRemoveSingle}
                 onGenerate={handleGenerate}
                 maxFiles={1}
+                showGenerate={false}
               />
               {/* Name input */}
               <div className="flex flex-col gap-2 w-full">
