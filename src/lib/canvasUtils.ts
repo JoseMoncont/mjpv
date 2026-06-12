@@ -108,7 +108,10 @@ export function drawSinglePhotoNameComposition(
 
   // 2. User photo
   if (userImage && template.userPhotoSlot) {
-    const { cx, cy, r } = template.userPhotoSlot;
+    const { cxPct, cyPct, rPct } = template.userPhotoSlot;
+    const cx = template.width  * cxPct / 100;
+    const cy = template.height * cyPct / 100;
+    const r  = template.width  * rPct  / 100;
 
     ctx.save();
     ctx.beginPath();
@@ -130,22 +133,42 @@ export function drawSinglePhotoNameComposition(
   // 3. Overlay on top (candidates + frame, transparent elsewhere)
   ctx.drawImage(overlayImg, 0, 0, template.width, template.height);
 
-  // 4. Name text
+  // 4. Name text (with optional background rect)
   if (userName.trim() && template.nameText) {
     const cfg = template.nameText;
     const text = cfg.uppercase ? userName.toUpperCase() : userName;
-    let fontSize = cfg.fontSize;
+    const x        = template.width  * cfg.xPct        / 100;
+    const y        = template.height * cfg.yPct        / 100;
+    const maxWidth = template.width  * cfg.maxWidthPct / 100;
+    let   fontSize = template.height * cfg.fontSizePct / 100;
 
     ctx.textAlign = cfg.align;
-    ctx.fillStyle = cfg.color;
     ctx.font = `${cfg.fontWeight} ${fontSize}px ${cfg.fontFamily}`;
 
-    while (ctx.measureText(text).width > cfg.maxWidth && fontSize > 20) {
+    while (ctx.measureText(text).width > maxWidth && fontSize > 12) {
       fontSize -= 2;
       ctx.font = `${cfg.fontWeight} ${fontSize}px ${cfg.fontFamily}`;
     }
 
-    ctx.fillText(text, cfg.x, cfg.y);
+    // Background rect
+    if (cfg.bgColor) {
+      const padX = cfg.bgPaddingX ?? 24;
+      const padY = cfg.bgPaddingY ?? 12;
+      const metrics = ctx.measureText(text);
+      const textW = metrics.width;
+      const ascent  = metrics.actualBoundingBoxAscent  ?? fontSize * 0.8;
+      const descent = metrics.actualBoundingBoxDescent ?? fontSize * 0.2;
+      ctx.fillStyle = cfg.bgColor;
+      ctx.fillRect(
+        x - textW / 2 - padX,
+        y - ascent - padY,
+        textW + padX * 2,
+        ascent + descent + padY * 2
+      );
+    }
+
+    ctx.fillStyle = cfg.color;
+    ctx.fillText(text, x, y);
   }
 }
 

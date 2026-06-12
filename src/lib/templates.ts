@@ -5,15 +5,34 @@ export interface PetCountConfig {
 }
 
 export interface NameTextConfig {
-  x: number;
-  y: number;
-  maxWidth: number;
+  /** Text center X as % of template width  (e.g. 50 = center) */
+  xPct: number;
+  /** Text baseline Y as % of template height */
+  yPct: number;
+  /** Maximum text width as % of template width (auto-shrinks font if wider) */
+  maxWidthPct: number;
+  /** Font size as % of template height */
+  fontSizePct: number;
   fontFamily: string;
   fontWeight: number;
-  fontSize: number;
   color: string;
+  /** Optional filled rect drawn behind the text */
+  bgColor?: string;
+  /** Horizontal padding of the bg rect in px */
+  bgPaddingX?: number;
+  /** Vertical padding of the bg rect in px */
+  bgPaddingY?: number;
   align: CanvasTextAlign;
   uppercase: boolean;
+}
+
+export interface UserPhotoSlotConfig {
+  /** Center X as % of template width */
+  cxPct: number;
+  /** Center Y as % of template height */
+  cyPct: number;
+  /** Radius as % of template width */
+  rPct: number;
 }
 
 export interface Template {
@@ -24,14 +43,11 @@ export interface Template {
   height: number;
   /**
    * Main template PNG.
-   * - pets-arc: drawn as background (candidates already in it).
-   * - single-photo-name: drawn as top overlay (must have transparent cutout at userPhotoSlot).
+   * - pets-arc: background layer (candidates already in it).
+   * - single-photo-name: top overlay (needs transparent cutout at userPhotoSlot).
    */
   src: string;
-  /**
-   * Optional background layer for single-photo-name templates.
-   * Drawn first, before the user photo and the overlay (src).
-   */
+  /** Background layer for single-photo-name — drawn first, before user photo. */
   bgSrc?: string;
 
   // ── pets-arc ─────────────────────────────────────────────────────────────
@@ -40,7 +56,7 @@ export interface Template {
   qrCode?: { src: string; size: number; padding: number };
 
   // ── single-photo-name ────────────────────────────────────────────────────
-  userPhotoSlot?: { cx: number; cy: number; r: number };
+  userPhotoSlot?: UserPhotoSlotConfig;
   nameText?: NameTextConfig;
 }
 
@@ -65,19 +81,24 @@ export const templates: Template[] = [
     id: "template-02",
     name: "Foto y nombre",
     type: "single-photo-name",
-    src: "/templates/template-02-A.png",   // overlay drawn on top
-    bgSrc: "/templates/template-02.png",   // background drawn first
+    src: "/templates/template-02-A.png",  // overlay — drawn on top
+    bgSrc: "/templates/template-02.png",  // background — drawn first
     width: 1080,
     height: 1350,
-    userPhotoSlot: { cx: 540, cy: 510, r: 220 },
+    // cx=540 → 50%, cy=510 → 37.8%, r=220 → 20.4% of width
+    userPhotoSlot: { cxPct: 50, cyPct: 37.8, rPct: 20.4 },
     nameText: {
-      x: 540,
-      y: 760,
-      maxWidth: 900,
+      // x=540 → 50%, y=760 → 56.3%, fontSize=68 → 5% of height, maxWidth=900 → 83.3% of width
+      xPct: 50,
+      yPct: 56.3,
+      fontSizePct: 5,
+      maxWidthPct: 83,
       fontFamily: '"Barlow Condensed", sans-serif',
       fontWeight: 800,
-      fontSize: 48,
       color: "#F5A800",
+      bgColor: "#2D2EE0",
+      bgPaddingX: 32,
+      bgPaddingY: 14,
       align: "center",
       uppercase: true,
     },
