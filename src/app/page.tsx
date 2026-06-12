@@ -3,7 +3,6 @@
 import { useCallback, useRef, useState } from "react";
 import ActionButtons from "@/components/ActionButtons";
 import TemplateCanvas from "@/components/TemplateCanvas";
-import TemplateSelector from "@/components/TemplateSelector";
 import UploadZone from "@/components/UploadZone";
 import { templates, type Template } from "@/lib/templates";
 
@@ -134,25 +133,49 @@ export default function Home() {
             <StarIcon color="#F5A800" size={18} />
             <StarIcon color="#E8401C" size={28} />
           </div>
-          <p
+          {/* Version toggle */}
+          <div
             style={{
-              fontFamily: "var(--font-display), 'Barlow Condensed', sans-serif",
-              fontWeight: 700,
-              letterSpacing: "0.18em",
-              fontSize: "clamp(0.85rem, 3vw, 1.1rem)",
-              textTransform: "uppercase",
-              color: "#F5A800",
+              display: "flex",
               border: "2px solid #F5A800",
-              padding: "0.35rem 1rem",
+              overflow: "hidden",
             }}
           >
-            Versión mascotas
-          </p>
+            {[
+              { id: "template-01", label: "Versión mascotas" },
+              { id: "template-02", label: "Versión persona" },
+            ].map(({ id, label }) => {
+              const active = selectedTemplate.id === id;
+              return (
+                <button
+                  key={id}
+                  onClick={() => handleTemplateSelect(templates.find((t) => t.id === id)!)}
+                  style={{
+                    fontFamily: "var(--font-display), 'Barlow Condensed', sans-serif",
+                    fontWeight: 700,
+                    letterSpacing: "0.12em",
+                    fontSize: "clamp(0.75rem, 2.5vw, 1rem)",
+                    textTransform: "uppercase",
+                    padding: "0.4rem 1rem",
+                    border: "none",
+                    cursor: "pointer",
+                    backgroundColor: active ? "#F5A800" : "transparent",
+                    color: active ? "#2D2EE0" : "#F5A800",
+                    transition: "background-color 0.2s, color 0.2s",
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
           <p
             className="text-sm md:text-base max-w-sm"
             style={{ color: "rgba(255,255,255,0.85)", fontFamily: "var(--font-body), Nunito, sans-serif" }}
           >
-            Sube las fotos de tus mascotas (máx. 4) y aparecerán alrededor del círculo
+            {selectedTemplate.type === "pets-arc"
+              ? "Sube las fotos de tus mascotas (máx. 4) y aparecerán alrededor del círculo"
+              : "Sube tu foto y escribe tu nombre para unirte a la campaña"}
           </p>
         </section>
 
@@ -272,11 +295,6 @@ export default function Home() {
               userName={selectedTemplate.type === "single-photo-name" ? userName : undefined}
             />
           </div>
-
-          <TemplateSelector
-            selected={selectedTemplate}
-            onSelect={handleTemplateSelect}
-          />
 
           {hasPhotos && (
             <ActionButtons canvasRef={canvasRef} disabled={false} />
