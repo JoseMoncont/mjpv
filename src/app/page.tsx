@@ -15,6 +15,21 @@ function StarIcon({ color = "#E8401C", size = 24 }: { color?: string; size?: num
   );
 }
 
+function AsteriskIcon({ color = "#F5A800", size = "1em" }: { color?: string; size?: string | number }) {
+  return (
+    <svg
+      width={size} height={size} viewBox="0 0 24 24"
+      aria-hidden="true"
+      style={{ display: "inline-block", verticalAlign: "middle", marginBottom: "0.1em" }}
+    >
+      <line x1="12" y1="2"     x2="12" y2="22"    stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="2"  y1="12"    x2="22" y2="12"    stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="19.07" y1="4.93" x2="4.93" y2="19.07" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export default function Home() {
   const [petFiles, setPetFiles] = useState<File[]>([]);
   const [petImages, setPetImages] = useState<HTMLImageElement[]>([]);
@@ -86,7 +101,9 @@ export default function Home() {
               textTransform: "uppercase",
             }}
           >
-            <span style={{ color: "#F5A800" }}>✳ ME LA JUEGO ✳</span>
+            <span style={{ color: "#F5A800" }}>
+              <AsteriskIcon size="0.7em" /> ME LA JUEGO <AsteriskIcon size="0.7em" />
+            </span>
             <br />
             <span style={{ color: "#ffffff" }}>POR LA VIDA</span>
           </h1>
