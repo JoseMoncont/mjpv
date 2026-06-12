@@ -24,6 +24,26 @@ export default function TemplateCanvas({
   const templateImgRef = useRef<HTMLImageElement | null>(null);
   const qrImgRef = useRef<HTMLImageElement | null>(null);
 
+  // Keep latest props in refs so callbacks always read current values
+  const petImagesRef = useRef(petImages);
+  const userImageRef = useRef(userImage);
+  const userNameRef = useRef(userName);
+  petImagesRef.current = petImages;
+  userImageRef.current = userImage;
+  userNameRef.current = userName;
+
+  function redraw() {
+    const canvas = canvasRef.current;
+    const templateImg = templateImgRef.current;
+    if (!canvas || !templateImg) return;
+
+    if (template.type === "pets-arc") {
+      drawComposition(canvas, petImagesRef.current, templateImg, template, qrImgRef.current ?? undefined);
+    } else {
+      drawSinglePhotoNameComposition(canvas, userImageRef.current ?? null, userNameRef.current, template, templateImg);
+    }
+  }
+
   // Load template PNG whenever the template changes
   useEffect(() => {
     templateImgRef.current = null;
@@ -59,18 +79,6 @@ export default function TemplateCanvas({
     if (template.type === "single-photo-name") redraw();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userImage, userName]);
-
-  function redraw() {
-    const canvas = canvasRef.current;
-    const templateImg = templateImgRef.current;
-    if (!canvas || !templateImg) return;
-
-    if (template.type === "pets-arc") {
-      drawComposition(canvas, petImages, templateImg, template, qrImgRef.current ?? undefined);
-    } else {
-      drawSinglePhotoNameComposition(canvas, userImage ?? null, userName, template, templateImg);
-    }
-  }
 
   return (
     <canvas

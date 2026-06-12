@@ -71,7 +71,7 @@ export const templates: Template[] = [
     id: "template-02",
     name: "Foto y nombre",
     type: "single-photo-name",
-    src: "/templates/template-02.png",
+    src: "/templates/template-02-A.png",
     width: 1080,
     height: 1350,
     userPhotoSlot: { cx: 540, cy: 510, r: 220 },
