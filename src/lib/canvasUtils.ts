@@ -130,10 +130,7 @@ export function drawSinglePhotoNameComposition(
     ctx.stroke();
   }
 
-  // 3. Overlay on top (candidates + frame, transparent elsewhere)
-  ctx.drawImage(overlayImg, 0, 0, template.width, template.height);
-
-  // 4. Name text (with optional background rect)
+  // 3. Name text — drawn before overlay so candidates layer sits on top
   if (userName.trim() && template.nameText) {
     const cfg = template.nameText;
     const text = cfg.uppercase ? userName.toUpperCase() : userName;
@@ -170,6 +167,9 @@ export function drawSinglePhotoNameComposition(
     ctx.fillStyle = cfg.color;
     ctx.fillText(text, x, y);
   }
+
+  // 4. Overlay on top (candidates + frame, transparent elsewhere)
+  ctx.drawImage(overlayImg, 0, 0, template.width, template.height);
 }
 
 /** Returns the canvas content as a PNG Blob. */

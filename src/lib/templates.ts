@@ -85,20 +85,18 @@ export const templates: Template[] = [
     bgSrc: "/templates/template-02.png",  // background — drawn first
     width: 1080,
     height: 1350,
-    // cx=540 → 50%, cy=510 → 37.8%, r=220 → 20.4% of width
-    userPhotoSlot: { cxPct: 50, cyPct: 37.8, rPct: 20.4 },
+    // cx=521 → 48.24%, cy=446 → 33.04%, r=290 → 26.85% of width
+    userPhotoSlot: { cxPct: 48.24, cyPct: 33.04, rPct: 26.85 },
     nameText: {
-      // x=540 → 50%, y=760 → 56.3%, fontSize=68 → 5% of height, maxWidth=900 → 83.3% of width
-      xPct: 50,
-      yPct: 56.3,
-      fontSizePct: 5,
-      maxWidthPct: 83,
+      // x=521 → 48.24%, y=800 → 59.26%, fontSize=64 → 4.74% of height, maxWidth=950 → 87.96% of width
+      // Drawn BEFORE the overlay so candidates layer sits on top if needed
+      xPct: 48.24,
+      yPct: 59.26,
+      fontSizePct: 4.74,
+      maxWidthPct: 87.96,
       fontFamily: '"Barlow Condensed", sans-serif',
       fontWeight: 800,
-      color: "#F5A800",
-      bgColor: "#2D2EE0",
-      bgPaddingX: 32,
-      bgPaddingY: 14,
+      color: "#FFFFFF",
       align: "center",
       uppercase: true,
     },
