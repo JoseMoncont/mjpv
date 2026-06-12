@@ -7,9 +7,7 @@ import type { Template } from "@/lib/templates";
 interface TemplateCanvasProps {
   template: Template;
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
-  // pets-arc
   petImages?: HTMLImageElement[];
-  // single-photo-name
   userImage?: HTMLImageElement | null;
   userName?: string;
 }
@@ -21,10 +19,11 @@ export default function TemplateCanvas({
   userImage,
   userName = "",
 }: TemplateCanvasProps) {
-  const templateImgRef = useRef<HTMLImageElement | null>(null);
+  const templateImgRef = useRef<HTMLImageElement | null>(null); // src (overlay for type-02)
+  const bgImgRef = useRef<HTMLImageElement | null>(null);       // bgSrc (background for type-02)
   const qrImgRef = useRef<HTMLImageElement | null>(null);
 
-  // Keep latest props in refs so callbacks always read current values
+  // Keep latest props in refs so async callbacks always read current values
   const petImagesRef = useRef(petImages);
   const userImageRef = useRef(userImage);
   const userNameRef = useRef(userName);
@@ -40,19 +39,42 @@ export default function TemplateCanvas({
     if (template.type === "pets-arc") {
       drawComposition(canvas, petImagesRef.current, templateImg, template, qrImgRef.current ?? undefined);
     } else {
-      drawSinglePhotoNameComposition(canvas, userImageRef.current ?? null, userNameRef.current, template, templateImg);
+      drawSinglePhotoNameComposition(
+        canvas,
+        userImageRef.current ?? null,
+        userNameRef.current,
+        template,
+        templateImg,
+        bgImgRef.current ?? undefined
+      );
     }
   }
 
-  // Load template PNG whenever the template changes
+  // Load template assets when template changes
   useEffect(() => {
     templateImgRef.current = null;
-    const img = new Image();
-    img.src = template.src;
-    img.onload = () => {
-      templateImgRef.current = img;
-      redraw();
+    bgImgRef.current = null;
+
+    let overlayReady = false;
+    let bgReady = !template.bgSrc; // no bgSrc means bg is not needed
+
+    const overlay = new Image();
+    overlay.src = template.src;
+    overlay.onload = () => {
+      templateImgRef.current = overlay;
+      overlayReady = true;
+      if (bgReady) redraw();
     };
+
+    if (template.bgSrc) {
+      const bg = new Image();
+      bg.src = template.bgSrc;
+      bg.onload = () => {
+        bgImgRef.current = bg;
+        bgReady = true;
+        if (overlayReady) redraw();
+      };
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [template.id]);
 
@@ -61,10 +83,7 @@ export default function TemplateCanvas({
     if (!template.qrCode) { qrImgRef.current = null; return; }
     const img = new Image();
     img.src = template.qrCode.src;
-    img.onload = () => {
-      qrImgRef.current = img;
-      redraw();
-    };
+    img.onload = () => { qrImgRef.current = img; redraw(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [template.qrCode?.src]);
 

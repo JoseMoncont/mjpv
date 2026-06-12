@@ -1,9 +1,6 @@
 export interface PetCountConfig {
-  /** Pet circle radius as a percentage of mainCircle.r. */
   radiusPct: number;
-  /** Distance from mainCircle center to pet center as a percentage of mainCircle.r. */
   arcRadiusPct: number;
-  /** Angles in degrees. 0°=right, 270°=straight down (math coords, y-flipped for screen). */
   angles: number[];
 }
 
@@ -22,31 +19,28 @@ export interface NameTextConfig {
 export interface Template {
   id: string;
   name: string;
-  /** Discriminates the draw strategy used by canvasUtils and TemplateCanvas. */
   type: "pets-arc" | "single-photo-name";
   width: number;
   height: number;
   /**
-   * Template PNG path. Used by both types:
-   * - pets-arc: drawn as background; pet photos appear on top.
-   * - single-photo-name: drawn as overlay on top of the user photo.
-   *   The PNG must have a transparent circular cutout at userPhotoSlot
-   *   so the user photo shows through.
+   * Main template PNG.
+   * - pets-arc: drawn as background (candidates already in it).
+   * - single-photo-name: drawn as top overlay (must have transparent cutout at userPhotoSlot).
    */
   src: string;
+  /**
+   * Optional background layer for single-photo-name templates.
+   * Drawn first, before the user photo and the overlay (src).
+   */
+  bgSrc?: string;
 
-  // ── pets-arc fields ──────────────────────────────────────────────────────
-  /** Reference circle already drawn in the PNG — used for arc positioning only. */
+  // ── pets-arc ─────────────────────────────────────────────────────────────
   mainCircle?: { cx: number; cy: number; r: number };
-  /** Per-count layout config. Pixel values derived at draw time from mainCircle.r. */
   petConfig?: Record<1 | 2 | 3 | 4, PetCountConfig>;
-  /** Optional QR code overlay drawn in the bottom-right corner. */
   qrCode?: { src: string; size: number; padding: number };
 
-  // ── single-photo-name fields ─────────────────────────────────────────────
-  /** Circular slot where the user photo is drawn (behind the template PNG). */
+  // ── single-photo-name ────────────────────────────────────────────────────
   userPhotoSlot?: { cx: number; cy: number; r: number };
-  /** Config for the name text drawn after the template. */
   nameText?: NameTextConfig;
 }
 
@@ -71,7 +65,8 @@ export const templates: Template[] = [
     id: "template-02",
     name: "Foto y nombre",
     type: "single-photo-name",
-    src: "/templates/template-02-A.png",
+    src: "/templates/template-02-A.png",   // overlay drawn on top
+    bgSrc: "/templates/template-02.png",   // background drawn first
     width: 1080,
     height: 1350,
     userPhotoSlot: { cx: 540, cy: 510, r: 220 },

@@ -81,16 +81,18 @@ export function drawComposition(
 
 /**
  * Composition for 'single-photo-name' templates. Draw order:
- *   1. User photo — circular, object-fit cover — + white border ring
- *   2. Template PNG on top (must have a transparent circular cutout at userPhotoSlot)
- *   3. Name text
+ *   1. Background (bgImg) — template-02.png
+ *   2. User photo — circular, object-fit cover — + white border ring
+ *   3. Overlay (overlayImg) — template-02-A.png, drawn on top with alpha transparency
+ *   4. Name text
  */
 export function drawSinglePhotoNameComposition(
   canvas: HTMLCanvasElement,
   userImage: HTMLImageElement | null,
   userName: string,
   template: Template,
-  templateImg: HTMLImageElement
+  overlayImg: HTMLImageElement,
+  bgImg?: HTMLImageElement
 ): void {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
@@ -99,7 +101,12 @@ export function drawSinglePhotoNameComposition(
   canvas.height = template.height;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 1. User photo behind the template
+  // 1. Background layer
+  if (bgImg) {
+    ctx.drawImage(bgImg, 0, 0, template.width, template.height);
+  }
+
+  // 2. User photo
   if (userImage && template.userPhotoSlot) {
     const { cx, cy, r } = template.userPhotoSlot;
 
@@ -120,10 +127,10 @@ export function drawSinglePhotoNameComposition(
     ctx.stroke();
   }
 
-  // 2. Template overlay (transparent cutout reveals user photo)
-  ctx.drawImage(templateImg, 0, 0, template.width, template.height);
+  // 3. Overlay on top (candidates + frame, transparent elsewhere)
+  ctx.drawImage(overlayImg, 0, 0, template.width, template.height);
 
-  // 3. Name text
+  // 4. Name text
   if (userName.trim() && template.nameText) {
     const cfg = template.nameText;
     const text = cfg.uppercase ? userName.toUpperCase() : userName;
