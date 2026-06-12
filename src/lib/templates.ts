@@ -85,8 +85,8 @@ export const templates: Template[] = [
     bgSrc: "/templates/template-02.png",  // background — drawn first
     width: 1080,
     height: 1350,
-    // cx=521 → 48.24%, cy=405 → 30%, r=313 → 29% of width
-    userPhotoSlot: { cxPct: 48.24, cyPct: 30, rPct: 29 },
+    // cx=521 → 48.24%, cy=446 → 33.04%, r=318 → 29.44% of width
+    userPhotoSlot: { cxPct: 48.24, cyPct: 33.04, rPct: 29.44 },
     nameText: {
       // x=521 → 48.24%, y=800 → 59.26%, fontSize=64 → 4.74% of height, maxWidth=950 → 87.96% of width
       // Drawn BEFORE the overlay so candidates layer sits on top if needed

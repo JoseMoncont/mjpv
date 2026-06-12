@@ -124,9 +124,9 @@ export function drawSinglePhotoNameComposition(
     ctx.restore();
 
     ctx.beginPath();
-    ctx.arc(cx, cy, r + 4, 0, Math.PI * 2);
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.strokeStyle = "#FFFFFF";
-    ctx.lineWidth = 6;
+    ctx.lineWidth = 8;
     ctx.stroke();
   }
 
